@@ -17,10 +17,20 @@ endif
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel
 
-# Files
+# ramdisk
 PRODUCT_COPY_FILES += \
     device/huawei/c8816/ramdisk/fstab.qcom:root/fstab.qcom \
-    device/huawei/c8816/ramdisk/tp/1191601.img:root/tp/1191601.img
+    device/huawei/c8816/ramdisk/tp/1191601.img:root/tp/1191601.img \
+    device/huawei/c8816/ramdisk/init.qcom.class_core.sh:root/init.qcom.class_core.sh \
+    device/huawei/c8816/ramdisk/init.qcom.class_main.sh:root/init.qcom.class_main.sh \
+    device/huawei/c8816/ramdisk/init.qcom.early_boot.sh:root/init.qcom.early_boot.sh \
+    device/huawei/c8816/ramdisk/init.qcom.factory.sh:root/init.qcom.factory.sh \
+    device/huawei/c8816/ramdisk/init.qcom.ril.sh:root/init.qcom.ril.sh \
+    device/huawei/c8816/ramdisk/init.qcom.sh:root/init.qcom.sh \
+    device/huawei/c8816/ramdisk/init.qcom.ssr.sh:root/init.qcom.ssr.sh \
+    device/huawei/c8816/ramdisk/init.qcom.syspart_fixup.sh:root/init.qcom.syspart_fixup.sh \
+    device/huawei/c8816/ramdisk/init.qcom.usb.sh:root/init.qcom.usb.sh \
+    device/huawei/c8816/ramdisk/ueventd.qcom.rc:root/ueventd.qcom.rc
 
 $(call inherit-product, build/target/product/full.mk)
 
