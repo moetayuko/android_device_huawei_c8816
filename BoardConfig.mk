@@ -3,6 +3,8 @@ USE_CAMERA_STUB := true
 # inherit from the proprietary version
 -include vendor/huawei/c8816/BoardConfigVendor.mk
 
+TARGET_SPECIFIC_HEADER_PATH := device/huawei/c8816/include
+
 TARGET_ARCH := arm
 TARGET_NO_BOOTLOADER := true
 TARGET_BOARD_PLATFORM := msm8610
