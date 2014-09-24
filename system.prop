@@ -1,0 +1,173 @@
+#
+# system.prop for msm8610
+#
+
+# Use reference RIL for initial bringup
+#rild.libpath=/system/lib/libreference-ril.so
+rild.libpath=/vendor/lib/libril-qc-qmi-1.so
+rild.libargs=-d /dev/smd0
+persist.rild.nitz_plmn=
+persist.rild.nitz_long_ons_0=
+persist.rild.nitz_long_ons_1=
+persist.rild.nitz_long_ons_2=
+persist.rild.nitz_long_ons_3=
+persist.rild.nitz_short_ons_0=
+persist.rild.nitz_short_ons_1=
+persist.rild.nitz_short_ons_2=
+persist.rild.nitz_short_ons_3=
+ril.subscription.types=NV,RUIM
+DEVICE_PROVISIONED=1
+persist.radio.msgtunnel.start=false
+persist.radio.atfwd.start=false
+# Start in cdma mode
+# ro.telephony.default_network=5
+
+#
+# system props for the cne module
+#
+persist.cne.feature=4
+# system prop for override memlimit to enable cne
+persist.cne.override.memlimit=1
+
+# Skip /sys/power/wait_for_fb_* nodes and
+# force FB to be always on
+debug.sf.fb_always_on=1
+debug.composition.type=dyn
+debug.gralloc.map_fb_memory=0
+debug.hwc.dynThreshold=1.5
+dalvik.vm.heapsize=36m
+dev.pm.dyn_samplingrate=1
+
+ro.hdmi.enable=true
+tunnel.decode=false
+#8x10 does not support tunnel av playback
+#this prop should be set to false all the time
+tunnel.audiovideo.decode=false
+lpa.decode=true
+lpa.use-stagefright=true
+
+#system props for the MM modules
+
+media.stagefright.enable-player=true
+media.stagefright.enable-http=true
+media.stagefright.enable-aac=true
+media.stagefright.enable-qcp=true
+media.stagefright.enable-fma2dp=true
+media.stagefright.enable-scan=true
+mmp.enable.3g2=true
+media.aac_51_output_enabled=true
+#131071 changed to 122879 to use google MP3Extractor instead of QC MP3Parser(ref:MMParserExtractor.h).
+#DTS2013111303152 zhangxianfeng 00186749 20131121 begin
+#change the value from 1DFFF to 9EFF, use google MP3/OGG/WAV/3GP extractor intead of qcom extractor
+#DTS2014012106237 zhangxianfeng 00186749 20140222 begin
+#change the value from 9EFF to 96FF, disable the PARSER_MP2PS
+mm.enable.qcom_parser=38655
+#DTS2014012106237 zhangxianfeng 00186749 20140222 end
+#DTS2013111303152 zhangxianfeng 00186749 20131121 end
+
+# VIDC: debug_levels
+# 1:ERROR 2:HIGH 4:LOW 0:NOlogs 7:AllLogs
+vidc.debug.level=1
+
+#
+# system props for widevine
+#
+persist.gralloc.cp.level3=1
+
+#
+# system props for the data modules
+#
+ro.use_data_netmgrd=true
+
+#system props for time-services
+persist.timed.enable=true
+
+#
+# system prop for opengles version
+#
+# 196608 is decimal for 0x30000 to report version 3
+ro.opengles.version=196608
+
+#
+# System props for telephony
+# System prop to turn on CdmaLTEPhone always
+#DTS2013083102155 g00216460 20130903 begin
+telephony.lteOnCdmaDevice=0
+#add lpa.decode and lpa.use-stagefright prop for Notes Mail'requirement of hujun 00163092
+lpa.decode=true
+lpa.use-stagefright=true
+#DTS2013083102155 g00216460 20130903 end
+
+# simulate sdcard on /data/media
+#
+persist.fuse_sdcard=false
+#
+# System prop for enabling the cdrom feature
+#
+persist.service.cdrom.enable=1
+
+#
+# System prop for default USB configuration
+#
+persist.sys.usb.config=diag,serial_smd,serial_tty,rmnet_bam,mass_storage,adb
+
+#
+#snapdragon value add features
+#
+ro.qc.sdk.audio.ssr=false
+##fluencetype can be "fluence" or "fluencepro" or "none"
+ro.qc.sdk.audio.fluencetype=none
+
+# Reduce Background apps limit
+ro.sys.fw.bg_apps_limit=20
+
+
+# System property for cabl
+ro.qualcomm.cabl=1
+
+# Enable Fast Dormancy	103
+persist.env.fastdorm.enabled=true
+
+#system props for restore modem_pref support
+# DTS2013120508124 z00114115 20131214 begin
+persist.radio.restore_mode_pref=1
+# DTS2013120508124 z00114115 20131214 end
+
+#
+# dirty ratio  value when enable UMS
+#
+ro.sys.umsdirtyratio=20
+
+# system prop for NFC DT
+ro.nfc.port=I2C
+
+#
+#DASH video streaming
+#Specify max allowed resolution/bandwidth for representations
+#Set allowed avsync window during playback
+#
+persist.dash.max.rep.resolution=1280*720
+persist.dash.max.rep.bandwidth=4000000
+persist.dash.avsync.window.msec=100
+
+tunnel.audio.encode = false
+
+#/*Support ICS double sdcard.The value maybe external_sd or internal_sd*/
+persist.sys.main_storage=internal_sd
+
+#/*enable the function for switching the SD card*/
+ro.config.hw_sd_swith=true
+
+
+#PPPOE config enable
+#
+ro.config.pppoe_enable=1
+
+# system prop for storage test
+ro.external.sd.path=/storage/sdcard1
+#Audio Resourcemanager exceptions
+#by enabling following flag to true we support pcm camcorder recording
+#DTS2013122005998 Pawan 20131224 begin
+#If audio track sets PCM playback usecase active but track stopped,to allow video record usecase
+rm.audio.exceptions = true
+#DTS2013122005998 Pawan 20131224 end
