@@ -1,0 +1,241 @@
+import /init.recovery.${ro.hardware}.rc
+
+on early-init
+    start ueventd
+
+on init
+#export PATH /sbin
+    export PATH /sbin:/bin:/system/sbin:/system/bin:/system/xbin
+    export LD_LIBRARY_PATH /system/vendor/lib:/system/lib
+    export ANDROID_ROOT /system
+    export ANDROID_DATA /data
+    export EXTERNAL_STORAGE /sdcard
+
+    symlink /system/etc /etc
+
+    mkdir /sdcard
+    mkdir /internal_sd
+    mkdir /external_sd
+    mkdir /sd-ext
+    mkdir /datadata
+    mkdir /emmc
+    mkdir /system
+    mkdir /data
+    mkdir /cache
+    mkdir /log
+    mkdir /cust
+    mount /tmp /tmp tmpfs
+
+    chown root shell /tmp
+    chmod 0775 /tmp
+
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 12D1
+    write /sys/class/android_usb/android0/idProduct 1038
+    write /sys/class/android_usb/android0/functions mass_storage,adb
+    write /sys/class/android_usb/android0/iManufacturer ${ro.product.manufacturer}
+    write /sys/class/android_usb/android0/iProduct ${ro.product.model}
+    write /sys/class/android_usb/android0/iSerial ${ro.serialno}
+
+    mkdir /persist
+    wait /dev/block/platform/msm_sdcc.1/by-name/persist
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/persist /persist nosuid nodev barrier=1
+
+on boot
+
+    ifup lo
+    hostname localhost
+    domainname localdomain
+
+    class_start default
+
+service vold /sbin/minivold
+    socket vold stream 0660 root mount
+    ioprio be 2
+
+service ueventd /sbin/ueventd
+    critical
+service test_diag /sbin/test_diag
+    disabled
+service cpu_ops /tmp/cpu_ops
+    disabled
+service recovery /sbin/recovery
+
+service adbd /sbin/adbd recovery
+    disabled
+
+# Always start adbd on userdebug and eng builds
+on property:ro.debuggable=1
+    write /sys/class/android_usb/android0/enable 1
+    start adbd
+
+# Restart adbd so it can run as root
+on property:service.adb.root=1
+    write /sys/class/android_usb/android0/enable 0
+    restart adbd
+    write /sys/class/android_usb/android0/enable 1
+
+# /* to process the usb port switch uevent */
+service hw_scsi_switch /sbin/hw_scsi_switch
+
+# /* USB google mode configuration */
+on property:sys.usb.config=mass_storage,adb
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 12d1
+    write /sys/class/android_usb/android0/idProduct 1038
+    write /sys/class/android_usb/android0/f_mass_storage/nluns ${ro.hw.usb.google.nluns}
+    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index ${ro.hw.usb.google.cdrom}
+    write /sys/class/android_usb/android0/functions ${sys.usb.config}
+    write /sys/class/android_usb/android0/enable 1
+    start adbd
+    setprop sys.usb.state ${sys.usb.config}
+
+# /* USB factory mode configuration */
+on property:sys.usb.config=serial,mass_storage,adb
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 12d1
+    write /sys/class/android_usb/android0/idProduct ${ro.hw.usb.pid.normal}
+    write /sys/class/android_usb/android0/iSerial cleanup
+    write /sys/class/android_usb/android0/f_diag/clients diag
+    write /sys/class/android_usb/android0/f_serial/transports smd,smd
+    write /sys/class/android_usb/android0/f_mass_storage/nluns 1
+    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index 0
+    write /sys/class/android_usb/android0/functions serial,mass_storage,adb,diag
+    write /sys/class/android_usb/android0/enable 1
+    start adbd
+    setprop sys.usb.state ${sys.usb.config}
+
+# /* USB update mode configuration */
+on property:sys.usb.config=update,serial,mass_storage,adb
+    write /sys/class/android_usb/android0/enable 0
+    write /sys/class/android_usb/android0/idVendor 12d1
+    write /sys/class/android_usb/android0/idProduct ${ro.hw.usb.pid.normal}
+    write /sys/class/android_usb/android0/iSerial cleanup
+    write /sys/class/android_usb/android0/f_diag/clients diag
+    write /sys/class/android_usb/android0/f_serial/transports smd,tty
+    write /sys/class/android_usb/android0/f_mass_storage/nluns 1
+    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index 0
+    write /sys/class/android_usb/android0/functions ${ro.hw.usb.update.functions}
+    write /sys/class/android_usb/android0/enable 1
+    start adbd
+    setprop sys.usb.state ${sys.usb.config}
+
+on property:power_off_charge=1
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "ondemand"
+    write /sys/devices/system/cpu/cpufreq/ondemand/sampling_rate 800000
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 300000
+    write /sys/devices/system/cpu/cpu1/online 0
+    write /sys/devices/system/cpu/cpu2/online 0
+    write /sys/devices/system/cpu/cpu3/online 0
+    write /sys/module/lpm_resources/enable_low_power/l2 2     
+    write /sys/module/lpm_resources/enable_low_power/pxo 1    
+    write /sys/module/lpm_resources/enable_low_power/vdd_dig 1
+    write /sys/module/lpm_resources/enable_low_power/vdd_mem 1
+    write  /sys/module/pm_8x60/modes/cpu0/wfi/suspend_enabled 1
+    write  /sys/module/pm_8x60/modes/cpu0/wfi/idle_enabled 1
+    write  /sys/module/pm_8x60/modes/cpu0/power_collapse/suspend_enabled 1
+    write  /sys/module/pm_8x60/modes/cpu0/power_collapse/idle_enabled 1
+    write  /sys/module/pm_8x60/modes/cpu0/stand0alone_power_collapse/suspend_enabled 1
+    write  /sys/module/pm_8x60/modes/cpu0/standalone_power_collapse/idle_enabled 1
+
+#start modem in recovery
+
+service huawei_version /sbin/huawei_version
+    user root
+    disabled
+    oneshot
+
+service rmt_storage /sbin/rmt_storage
+    user root
+    disabled
+    oneshot
+service rmt_oeminfo /sbin/rmt_oeminfo
+    disabled
+service libqmi_oem_main /sbin/libqmi_oem_main
+    disabled
+service usb_update /sbin/usb_update
+    user root
+    disabled
+
+service applogcat /system/bin/logcat -v threadtime -r 1024 -n 16 -f /data/recoverylog/applogcat-log
+    disabled
+
+service kmsglogcat /system/bin/kmsgcat -r 1024 -n 16 -f /data/recoverylog/kmsgcat-log
+    disabled
+
+service recoverylog /system/bin/sh /etc/recoverylog.sh
+    disabled
+    oneshot
+
+on property:recovery.log=*
+    start recoverylog
+
+on property:androidboot.start_services=true
+
+    exec /sbin/e2fsck_s -y /dev/block/platform/msm_sdcc.1/by-name/cache
+
+
+    exec /sbin/e2fsck_s -y /dev/block/platform/msm_sdcc.1/by-name/userdata
+
+    exec /sbin/e2fsck_s -y /dev/block/platform/msm_sdcc.1/by-name/log
+
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/system /system 
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/cust /cust
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/userdata /data -o rw 
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/cache /cache -o rw 
+    mount ext4 /dev/block/platform/msm_sdcc.1/by-name/log /log -o rw
+
+    mkdir /data/misc
+    chmod 01771 /data/misc
+    chown system.misc /data/misc
+    mkdir /data/misc/wifi
+    chmod 0770 /data/misc/wifi
+    chown wifi.wifi /data/misc/wifi
+    mkdir /data/misc/wifi/load
+    chmod 0775 /data/misc/wifi/load
+    mkdir /data/misc/wifi/bin
+    chmod 0775 /data/misc/wifi/bin
+    chown system.system /data/misc/wifi/bin
+
+    mkdir /firmware 0771 system system
+    wait /dev/block/platform/msm_sdcc.1/by-name/modem
+    mount vfat /dev/block/platform/msm_sdcc.1/by-name/modem /firmware ro shortname=lower
+    load_prop_from_file
+    setprop recovery.load_finish true
+    setprop recovery.start_svice true
+    setprop recovery.log on
+
+service config_bluetooth /system/bin/sh /system/etc/init.qcom.bt.sh "onboot"
+    class core
+    user root
+    oneshot
+    disabled
+
+service wlan_detect /system/bin/wlan_detect
+    class main
+    user root
+    group root
+    oneshot
+    disabled
+
+on property:recovery.start_svice=true
+    start wlan_detect
+    exec /system/bin/sh /system/etc/init.qcom.wifi.sh ${ro.board.platform} ${ro.serialno}
+    start config_bluetooth
+    start rmt_storage
+    start test_diag
+    start rmt_oeminfo
+    start libqmi_oem_main
+    start huawei_version
+    start usb_update
+
+on property:recovery.all_cpus_online=true
+    start cpu_ops
+
+
+service charge /sbin/charge
+    user root
+    disabled
+    
+service chargelog  /sbin/chargelog.sh 5 200000
+    root charger
