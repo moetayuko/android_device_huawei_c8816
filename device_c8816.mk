@@ -17,6 +17,11 @@ endif
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel
 
+# Files
+PRODUCT_COPY_FILES += \
+    device/huawei/c8816/ramdisk/fstab.qcom:root/fstab.qcom \
+    device/huawei/c8816/ramdisk/tp/1191601.img:root/tp/1191601.img
+
 $(call inherit-product, build/target/product/full.mk)
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0

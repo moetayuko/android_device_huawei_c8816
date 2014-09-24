@@ -36,6 +36,6 @@ BOARD_FLASH_BLOCK_SIZE := 131072
 TARGET_PREBUILT_KERNEL := device/huawei/c8816/kernel
 
 BOARD_HAS_NO_SELECT_BUTTON := true
-TARGET_RECOVERY_FSTAB := device/huawei/c8816/recovery/fstab.qcom
+TARGET_RECOVERY_FSTAB := device/huawei/c8816/ramdisk/fstab.qcom
 TARGET_RECOVERY_INITRC := device/huawei/c8816/recovery/init.rc
 TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
