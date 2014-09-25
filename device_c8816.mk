@@ -14,6 +14,11 @@ else
 	LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
 endif
 
+# Charger
+PRODUCT_PACKAGES += \
+    charger \
+    charger_res_images
+
 PRODUCT_COPY_FILES += \
     $(LOCAL_KERNEL):kernel
 
