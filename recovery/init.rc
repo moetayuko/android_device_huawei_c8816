@@ -73,7 +73,13 @@ service test_diag /sbin/test_diag
     disabled
 service cpu_ops /tmp/cpu_ops
     disabled
-service recovery /sbin/recovery
+
+service charge /sbin/charge
+    user root
+    disabled
+
+service recovery /sbin/initrec.sh
+    user root
 
 service adbd /sbin/adbd recovery
     disabled
@@ -245,11 +251,6 @@ on property:recovery.start_svice=true
 
 on property:recovery.all_cpus_online=true
     start cpu_ops
-
-
-service charge /sbin/charge
-    user root
-    disabled
     
 service chargelog  /sbin/chargelog.sh 5 200000
     root charger
