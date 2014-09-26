@@ -53,8 +53,10 @@ TARGET_PREBUILT_KERNEL := device/huawei/c8816/kernel
 
 BOARD_HAS_NO_SELECT_BUTTON := true
 TARGET_RECOVERY_FSTAB := device/huawei/c8816/ramdisk/fstab.qcom
-TARGET_RECOVERY_INITRC := device/huawei/c8816/recovery/init.rc
-TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
-TARGET_USE_CUSTOM_LUN_FILE_PATH := /sys/class/android_usb/android0/f_mass_storage/lun%d/file
-BOARD_UMS_LUNFILE := /sys/class/android_usb/android0/f_mass_storage/lun%d/file
 BOARD_USE_CUSTOM_RECOVERY_FONT := \"fontcn28_15x40.h\"
+DEVICE_RESOLUTION := 540x960
+TARGET_RECOVERY_PIXEL_FORMAT := "RGBX_8888"
+TARGET_RECOVERY_INITRC := device/huawei/c8816/recovery/init.rc
+TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun%d/file"
+BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
+TARGET_RECOVERY_LCD_BACKLIGHT_PATH := \"/sys/class/leds/lcd-backlight/brightness\"

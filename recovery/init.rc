@@ -44,8 +44,10 @@ on init
     mount tmpfs tmpfs /mnt/fuse mode=0775,gid=1000
 
     write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 12D1
+    write /sys/class/android_usb/android0/idVendor 12d1
     write /sys/class/android_usb/android0/idProduct 1038
+    write /sys/class/android_usb/android0/f_mass_storage/nluns 2
+    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index none
     write /sys/class/android_usb/android0/functions mass_storage,adb
     write /sys/class/android_usb/android0/iManufacturer ${ro.product.manufacturer}
     write /sys/class/android_usb/android0/iProduct ${ro.product.model}
@@ -97,48 +99,6 @@ on property:service.adb.root=1
 
 # /* to process the usb port switch uevent */
 service hw_scsi_switch /sbin/hw_scsi_switch
-
-# /* USB google mode configuration */
-on property:sys.usb.config=mass_storage,adb
-    write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 12d1
-    write /sys/class/android_usb/android0/idProduct 1038
-    write /sys/class/android_usb/android0/f_mass_storage/nluns ${ro.hw.usb.google.nluns}
-    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index ${ro.hw.usb.google.cdrom}
-    write /sys/class/android_usb/android0/functions ${sys.usb.config}
-    write /sys/class/android_usb/android0/enable 1
-    start adbd
-    setprop sys.usb.state ${sys.usb.config}
-
-# /* USB factory mode configuration */
-on property:sys.usb.config=serial,mass_storage,adb
-    write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 12d1
-    write /sys/class/android_usb/android0/idProduct ${ro.hw.usb.pid.normal}
-    write /sys/class/android_usb/android0/iSerial cleanup
-    write /sys/class/android_usb/android0/f_diag/clients diag
-    write /sys/class/android_usb/android0/f_serial/transports smd,smd
-    write /sys/class/android_usb/android0/f_mass_storage/nluns 1
-    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index 0
-    write /sys/class/android_usb/android0/functions serial,mass_storage,adb,diag
-    write /sys/class/android_usb/android0/enable 1
-    start adbd
-    setprop sys.usb.state ${sys.usb.config}
-
-# /* USB update mode configuration */
-on property:sys.usb.config=update,serial,mass_storage,adb
-    write /sys/class/android_usb/android0/enable 0
-    write /sys/class/android_usb/android0/idVendor 12d1
-    write /sys/class/android_usb/android0/idProduct ${ro.hw.usb.pid.normal}
-    write /sys/class/android_usb/android0/iSerial cleanup
-    write /sys/class/android_usb/android0/f_diag/clients diag
-    write /sys/class/android_usb/android0/f_serial/transports smd,tty
-    write /sys/class/android_usb/android0/f_mass_storage/nluns 1
-    write /sys/class/android_usb/android0/f_mass_storage/cdrom_index 0
-    write /sys/class/android_usb/android0/functions ${ro.hw.usb.update.functions}
-    write /sys/class/android_usb/android0/enable 1
-    start adbd
-    setprop sys.usb.state ${sys.usb.config}
 
 on property:power_off_charge=1
     write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor "ondemand"
