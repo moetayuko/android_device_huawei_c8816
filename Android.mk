@@ -14,5 +14,10 @@
 # limitations under the License.
 #
 
-PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/device_c8816.mk
+LOCAL_PATH := $(call my-dir)
+
+ifeq ($(TARGET_DEVICE),c8816)
+
+include $(call all-makefiles-under,$(LOCAL_PATH))
+
+endif
