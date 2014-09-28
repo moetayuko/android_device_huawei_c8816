@@ -60,3 +60,4 @@ TARGET_RECOVERY_INITRC := device/huawei/c8816/recovery/init.rc
 TARGET_USE_CUSTOM_LUN_FILE_PATH := "/sys/devices/platform/msm_hsusb/gadget/lun%d/file"
 BOARD_VOLD_DISC_HAS_MULTIPLE_MAJORS := true
 TARGET_RECOVERY_LCD_BACKLIGHT_PATH := \"/sys/class/leds/lcd-backlight/brightness\"
+BOARD_RECOVERY_SWIPE := true
